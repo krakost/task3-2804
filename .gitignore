@@ -17,6 +17,9 @@ coverage
 .env
 .env.*.local
 
+# Firebase CLI cache
+.firebase
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

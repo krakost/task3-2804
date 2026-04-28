@@ -35,6 +35,15 @@ export default {
           DEFAULT: 'var(--card)',
           foreground: 'var(--card-foreground)',
         },
+        /** Dark promo / features slice (landing-style blocks without coupling to app chrome) */
+        feature: {
+          bg: '#000000',
+          card: '#121212',
+          stroke: '#222222',
+          muted: '#a0a0a0',
+          gold: '#d4af37',
+          iconbox: '#1a1a1a',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

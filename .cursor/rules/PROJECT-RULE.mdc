@@ -14,7 +14,6 @@ alwaysApply: true
 * **lucide-react**
 * **React Query (@tanstack/react-query)**
 * **Zustand**
-* **Supabase JS SDK**
 * **clsx / tailwind-merge**
 
 ---
@@ -64,7 +63,6 @@ alwaysApply: true
     useTasks.ts
 
   /lib
-    supabase.ts       # client
     api-client.ts     # запросы к workers
     utils.ts
 
