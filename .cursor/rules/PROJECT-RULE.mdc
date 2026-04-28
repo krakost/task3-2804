@@ -1,0 +1,82 @@
+---
+description: 
+alwaysApply: true
+---
+
+# ⚙️ Frontend Tech Stack
+
+* **React**
+* **TypeScript**
+* **Vite**
+* **react-router-dom**
+* **Tailwind CSS**
+* **shadcn/ui**
+* **lucide-react**
+* **React Query (@tanstack/react-query)**
+* **Zustand**
+* **Supabase JS SDK**
+* **clsx / tailwind-merge**
+
+---
+
+# 📁 Frontend Project Structure
+
+```bash id="zj5ktd"
+/src
+  /app
+    router.tsx        # маршрутизация
+    providers.tsx     # QueryClient, Theme, etc.
+
+  /pages
+    /boards
+      BoardsPage.tsx
+
+    /board
+      BoardPage.tsx
+
+    /settings
+      SettingsPage.tsx
+
+  /components
+    /ui               # shadcn components
+    /shared           # кнопки, layout, header
+    /kanban
+      Board.tsx
+      Column.tsx
+      TaskCard.tsx
+
+  /features
+    /boards
+      api.ts
+      store.ts
+      types.ts
+
+    /tasks
+      api.ts
+      store.ts
+      types.ts
+
+    /ai
+      api.ts
+
+  /hooks
+    useBoards.ts
+    useTasks.ts
+
+  /lib
+    supabase.ts       # client
+    api-client.ts     # запросы к workers
+    utils.ts
+
+  /store
+    ui.store.ts
+
+  /styles
+    globals.css
+
+  /types
+    index.ts
+
+  main.tsx
+  App.tsx
+```
