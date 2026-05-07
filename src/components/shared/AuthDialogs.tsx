@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { isSupabaseConfigured, supabase } from '@/lib/supabase-client'
 
 export type AuthDialogMode = 'closed' | 'signin' | 'signup'
 
@@ -17,6 +18,9 @@ type AuthDialogsProps = {
   mode: AuthDialogMode
   onModeChange: (mode: AuthDialogMode) => void
 }
+
+const CONFIG_HINT =
+  'Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment.'
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -59,16 +63,27 @@ function OrDivider() {
   )
 }
 
-function ContinueWithGoogleButton() {
+function ContinueWithGoogleButton({
+  disabled,
+  loading,
+  onContinue,
+}: {
+  disabled?: boolean
+  loading?: boolean
+  onContinue: () => void | Promise<void>
+}) {
   return (
     <Button
       type="button"
       variant="outline"
       className="w-full gap-2"
       aria-label="Continue with Google"
+      aria-busy={loading}
+      disabled={disabled}
+      onClick={() => void onContinue()}
     >
       <GoogleIcon className="size-4 shrink-0" />
-      Continue with Google
+      {loading ? 'Redirecting…' : 'Continue with Google'}
     </Button>
   )
 }
@@ -81,12 +96,20 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [info, setInfo] = useState<string | null>(null)
+  const [pending, setPending] = useState(false)
+  const [oauthPending, setOauthPending] = useState(false)
+
+  const busy = pending || oauthPending
 
   function resetForm() {
     setEmail('')
     setPassword('')
     setConfirmPassword('')
     setError(null)
+    setInfo(null)
+    setPending(false)
+    setOauthPending(false)
   }
 
   function handleClose() {
@@ -94,28 +117,102 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
     onModeChange('closed')
   }
 
-  /** Switch login vs register inside the popup without clearing email. */
   function switchAuthMode(next: 'signin' | 'signup') {
     setPassword('')
     setConfirmPassword('')
     setError(null)
+    setInfo(null)
     onModeChange(next)
   }
 
-  function handleSignIn(e: FormEvent) {
-    e.preventDefault()
+  async function handleGoogleSignIn() {
     setError(null)
-    handleClose()
+    setInfo(null)
+    if (!isSupabaseConfigured() || !supabase) {
+      setError(CONFIG_HINT)
+      return
+    }
+    setOauthPending(true)
+    try {
+      const redirectTo =
+        typeof window !== 'undefined'
+          ? `${window.location.origin}${window.location.pathname}`
+          : undefined
+      const { error: oauthErr } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo,
+          queryParams: { prompt: 'select_account' },
+          scopes: 'email profile',
+        },
+      })
+      if (oauthErr) setError(oauthErr.message)
+    } finally {
+      setOauthPending(false)
+    }
   }
 
-  function handleSignUp(e: FormEvent) {
+  async function handleSignIn(e: FormEvent) {
     e.preventDefault()
     setError(null)
+    setInfo(null)
+    if (!isSupabaseConfigured() || !supabase) {
+      setError(CONFIG_HINT)
+      return
+    }
+    setPending(true)
+    try {
+      const { error: signErr } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (signErr) {
+        setError(signErr.message)
+        return
+      }
+      resetForm()
+      onModeChange('closed')
+    } finally {
+      setPending(false)
+    }
+  }
+
+  async function handleSignUp(e: FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setInfo(null)
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
       return
     }
-    handleClose()
+    if (!isSupabaseConfigured() || !supabase) {
+      setError(CONFIG_HINT)
+      return
+    }
+    setPending(true)
+    try {
+      const redirectTo =
+        typeof window !== 'undefined' ? window.location.origin : undefined
+      const { data, error: signErr } = await supabase.auth.signUp({
+        email,
+        password,
+        options: redirectTo ? { emailRedirectTo: redirectTo } : undefined,
+      })
+      if (signErr) {
+        setError(signErr.message)
+        return
+      }
+      if (data.session) {
+        resetForm()
+        onModeChange('closed')
+      } else {
+        setPassword('')
+        setConfirmPassword('')
+        setInfo('Check your email to confirm your account before signing in.')
+      }
+    } finally {
+      setPending(false)
+    }
   }
 
   return (
@@ -147,6 +244,7 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={busy}
                 required
               />
             </div>
@@ -158,20 +256,31 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={busy}
                 required
                 minLength={6}
               />
             </div>
-            <Button type="submit" className="w-full">
-              Sign in
+            {error ? (
+              <p className="text-sm text-destructive" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <Button type="submit" className="w-full" disabled={busy}>
+              {pending ? 'Signing in…' : 'Sign in'}
             </Button>
             <OrDivider />
-            <ContinueWithGoogleButton />
+            <ContinueWithGoogleButton
+              disabled={busy}
+              loading={oauthPending}
+              onContinue={handleGoogleSignIn}
+            />
             <p className="text-center text-sm text-muted-foreground">
               No account?{' '}
               <button
                 type="button"
                 className="font-medium text-foreground underline-offset-4 hover:underline"
+                disabled={busy}
                 onClick={() => switchAuthMode('signup')}
               >
                 Sign up
@@ -188,6 +297,7 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={busy}
                 required
                 aria-invalid={Boolean(error)}
               />
@@ -200,6 +310,7 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={busy}
                 required
                 minLength={6}
                 aria-invalid={Boolean(error)}
@@ -213,26 +324,37 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
                 autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={busy}
                 required
                 minLength={6}
                 aria-invalid={Boolean(error)}
               />
             </div>
+            {info ? (
+              <p className="text-sm text-muted-foreground" role="status">
+                {info}
+              </p>
+            ) : null}
             {error ? (
               <p className="text-sm text-destructive" role="alert">
                 {error}
               </p>
             ) : null}
-            <Button type="submit" className="w-full">
-              Sign up
+            <Button type="submit" className="w-full" disabled={busy}>
+              {pending ? 'Signing up…' : 'Sign up'}
             </Button>
             <OrDivider />
-            <ContinueWithGoogleButton />
+            <ContinueWithGoogleButton
+              disabled={busy}
+              loading={oauthPending}
+              onContinue={handleGoogleSignIn}
+            />
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
               <button
                 type="button"
                 className="font-medium text-foreground underline-offset-4 hover:underline"
+                disabled={busy}
                 onClick={() => switchAuthMode('signin')}
               >
                 Sign in

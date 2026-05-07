@@ -1,0 +1,255 @@
+import { useEffect, useMemo, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useAuthStore } from '@/features/auth/store'
+import {
+  useAddBoardMember,
+  useBoardMembers,
+  useRemoveBoardMember,
+  useSearchProfiles,
+} from '@/hooks/useBoardMembers'
+
+export type BoardSettingsDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  boardId: string | null
+  boardTitle?: string | null
+  ownerUserId: string | null
+}
+
+export function BoardSettingsDialog({
+  open,
+  onOpenChange,
+  boardId,
+  boardTitle,
+  ownerUserId,
+}: BoardSettingsDialogProps) {
+  const currentUser = useAuthStore((s) => s.user)
+  const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setDebouncedQuery(query.trim()), 400)
+    return () => window.clearTimeout(t)
+  }, [query])
+
+  const membersQuery = useBoardMembers(boardId, open)
+  const searchQuery = useSearchProfiles(debouncedQuery)
+  const addMember = useAddBoardMember()
+  const removeMember = useRemoveBoardMember()
+
+  const [addingId, setAddingId] = useState<string | null>(null)
+  const [removingId, setRemovingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!open) {
+      setQuery('')
+      setDebouncedQuery('')
+    }
+  }, [open])
+
+  const memberIds = useMemo(
+    () => new Set(membersQuery.data?.map((m) => m.userId) ?? []),
+    [membersQuery.data],
+  )
+
+  const rawSearchHits = searchQuery.data ?? []
+
+  const searchHits = useMemo(() => {
+    const hits = rawSearchHits
+    if (!currentUser?.id || ownerUserId == null || ownerUserId === '')
+      return hits
+    return hits.filter(
+      (h) =>
+        h.id !== currentUser.id &&
+        h.id !== ownerUserId &&
+        !memberIds.has(h.id),
+    )
+  }, [rawSearchHits, currentUser?.id, ownerUserId, memberIds])
+
+  async function handleAdd(userId: string) {
+    if (!boardId) return
+    setAddingId(userId)
+    addMember.reset()
+    try {
+      await addMember.mutateAsync({ boardId, userId })
+    } finally {
+      setAddingId(null)
+    }
+  }
+
+  async function handleRemove(userId: string) {
+    if (!boardId) return
+    setRemovingId(userId)
+    removeMember.reset()
+    try {
+      await removeMember.mutateAsync({ boardId, userId })
+    } finally {
+      setRemovingId(null)
+    }
+  }
+
+  const membersBusy = membersQuery.isFetching
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="flex max-h-[min(90vh,36rem)] flex-col gap-4 sm:max-w-md"
+        showCloseButton
+      >
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold tracking-tight">
+            Настройки board
+          </DialogTitle>
+          <DialogDescription className="text-sm">
+            {boardTitle ? (
+              <>
+                Доска «{boardTitle}». Участники и приглашения по email или имени в
+                профиле.
+              </>
+            ) : (
+              <>
+                Участники и приглашения по email или имени в профиле.
+              </>
+            )}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+          <section className="shrink-0 space-y-2">
+            <h3 className="text-sm font-medium text-foreground">Участники</h3>
+            <div className="max-h-40 overflow-auto rounded-md border border-border">
+              {membersBusy ? (
+                <p className="p-3 text-sm text-muted-foreground">Загрузка…</p>
+              ) : !membersQuery.data?.length ? (
+                <p className="p-3 text-sm text-muted-foreground">
+                  Пока никого не добавили.
+                </p>
+              ) : (
+                <ul className="divide-y divide-border">
+                  {membersQuery.data.map((m) => (
+                    <li
+                      key={m.userId}
+                      className="flex items-center justify-between gap-2 px-3 py-2"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{m.name}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {m.email}
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="shrink-0 text-destructive hover:bg-destructive/10"
+                        disabled={removingId === m.userId || removeMember.isPending}
+                        onClick={() => void handleRemove(m.userId)}
+                      >
+                        {removingId === m.userId ? '…' : 'Удалить'}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {removeMember.error ? (
+              <p className="text-sm text-destructive" role="alert">
+                {removeMember.error.message}
+              </p>
+            ) : null}
+          </section>
+
+          <section className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+            <Label htmlFor="board-settings-user-search">
+              Поиск пользователей
+            </Label>
+            <Input
+              id="board-settings-user-search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Минимум 2 символа (имя или email)…"
+              autoComplete="off"
+            />
+            {addMember.error ? (
+              <p className="text-sm text-destructive" role="alert">
+                {addMember.error.message}
+              </p>
+            ) : null}
+            <div className="min-h-0 flex-1 overflow-auto rounded-md border border-border">
+              {query.trim().length < 2 ? (
+                <p className="p-3 text-sm text-muted-foreground">
+                  Введите запрос для поиска по всем профилям.
+                </p>
+              ) : searchQuery.isError ? (
+                <p className="p-3 text-sm text-destructive" role="alert">
+                  {searchQuery.error instanceof Error
+                    ? searchQuery.error.message
+                    : 'Ошибка поиска'}
+                </p>
+              ) : debouncedQuery.length < 2 ? (
+                <p className="p-3 text-sm text-muted-foreground">Поиск…</p>
+              ) : searchQuery.isFetching ? (
+                <p className="p-3 text-sm text-muted-foreground">Поиск…</p>
+              ) : searchHits.length === 0 ? (
+                rawSearchHits.length > 0 ? (
+                  <p className="p-3 text-sm text-muted-foreground">
+                    Все найденные пользователи — вы, владелец или уже в списке
+                    участников.
+                  </p>
+                ) : (
+                  <p className="p-3 text-sm text-muted-foreground">
+                    Нет пользователей по этому запросу. Человек должен{' '}
+                    <strong className="font-medium text-foreground">
+                      один раз войти / зарегистрироваться
+                    </strong>{' '}
+                    в приложении — тогда появится в каталоге профилей. Проверьте
+                    написание email.
+                  </p>
+                )
+              ) : (
+                <ul className="divide-y divide-border">
+                  {searchHits.map((u) => (
+                    <li
+                      key={u.id}
+                      className="flex items-center justify-between gap-2 px-3 py-2"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{u.name}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {u.email}
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={
+                          addingId === u.id ||
+                          addMember.isPending ||
+                          !boardId
+                        }
+                        onClick={() => void handleAdd(u.id)}
+                      >
+                        {addingId === u.id ? '…' : 'Добавить'}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}

@@ -1,1 +1,1 @@
-export type { BoardSummary } from '@/types'
+export type { BoardMember, BoardSummary } from '@/types'
