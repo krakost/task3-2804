@@ -17,6 +17,7 @@ import {
   useDeleteBoardColumn,
   useUpdateBoardColumn,
 } from '@/hooks/useBoardColumns'
+import { COLUMN_COLOR_PRESETS } from '@/components/kanban/column-color-presets'
 import type { BoardColumnSummary } from '@/types'
 
 function hexForColorInput(hex: string): string {
@@ -30,23 +31,11 @@ function hexForColorInput(hex: string): string {
   return '#71717a'
 }
 
-export const COLUMN_COLOR_PRESETS = [
-  '#71717a',
-  '#ef4444',
-  '#f97316',
-  '#eab308',
-  '#22c55e',
-  '#14b8a6',
-  '#3b82f6',
-  '#8b5cf6',
-  '#ec4899',
-] as const
-
 const DEFAULT_COLUMN_COLOR: string = COLUMN_COLOR_PRESETS[0]
 
-export type ColumnFormMode = 'create' | 'edit'
+type ColumnFormMode = 'create' | 'edit'
 
-export type ColumnFormDialogProps = {
+type ColumnFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   mode: ColumnFormMode

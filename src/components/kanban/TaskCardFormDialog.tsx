@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
-import { COLUMN_COLOR_PRESETS } from '@/components/kanban/ColumnFormDialog'
+import { COLUMN_COLOR_PRESETS } from '@/components/kanban/column-color-presets'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
