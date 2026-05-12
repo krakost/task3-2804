@@ -79,7 +79,7 @@ export function BoardSettingsDialog({
         h.id !== ownerUserId &&
         !memberIds.has(h.id),
     )
-  }, [rawSearchHits, currentUser?.id, ownerUserId, memberIds])
+  }, [rawSearchHits, currentUser, ownerUserId, memberIds])
 
   async function handleAdd(userId: string) {
     if (!boardId) return
