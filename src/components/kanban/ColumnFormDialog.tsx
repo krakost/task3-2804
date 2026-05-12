@@ -75,8 +75,7 @@ export function ColumnFormDialog({
       setTitle('')
       setColor(DEFAULT_COLUMN_COLOR)
     }
-    // column из стейта родителя стабилен на время редактирования; reset из TanStack Query стабилен.
-  }, [open, mode, column, createCol.reset, updateCol.reset, deleteCol.reset])
+  }, [open, mode, column, createCol, updateCol, deleteCol])
 
   function handleClose() {
     onOpenChange(false)
