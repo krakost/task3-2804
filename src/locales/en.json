@@ -1,0 +1,172 @@
+{
+  "layout": {
+    "brand": "Kanban",
+    "nav": {
+      "boards": "Boards",
+      "settings": "Settings"
+    },
+    "auth": {
+      "signOut": "Sign out",
+      "signIn": "Sign in",
+      "signUp": "Sign up"
+    },
+    "locale": {
+      "label": "Language",
+      "en": "English",
+      "ru": "Russian"
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting…",
+    "loading": "Loading…",
+    "save": "Save",
+    "saving": "Saving…",
+    "create": "Create",
+    "creating": "Creating…",
+    "retryLoad": "Retry loading",
+    "searchError": "Search error",
+    "title": "Title",
+    "color": "Color",
+    "customColor": "Custom color"
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "description": "Application settings placeholder."
+  },
+  "boardsPage": {
+    "title": "Boards",
+    "loading": "Loading…",
+    "signInToSee": "Sign in to view your boards.",
+    "empty": "No boards yet — create the first one in the sidebar.",
+    "count_one": "{{count}} board.",
+    "count_other": "{{count}} boards."
+  },
+  "boardPage": {
+    "boardFallback": "Board",
+    "idPrefix": "ID:",
+    "loadingTasks": " · Loading tasks…",
+    "tasksCount_one": " · {{count}} task",
+    "tasksCount_other": " · {{count}} tasks"
+  },
+  "boardsSidebar": {
+    "title": "Boards",
+    "total": "{{count}} total",
+    "createBoard": "Create board",
+    "noBoardsYet": "No boards yet.",
+    "dialogCreateTitle": "Create board",
+    "dialogCreateDescription": "Enter a name for the new board.",
+    "namePlaceholder": "e.g. Product",
+    "deleteConfirmTitle": "Delete board?",
+    "deleteConfirmDescription": "«{{title}}» will be permanently deleted. Tasks and members will be lost.",
+    "ariaSettings": "Board settings: {{title}}",
+    "ariaDelete": "Delete board: {{title}}"
+  },
+  "boardSettings": {
+    "dialogTitle": "Board settings",
+    "descriptionNamed": "Board «{{title}}». Invite members by email or display name.",
+    "descriptionGeneric": "Invite members by email or display name.",
+    "membersHeading": "Members",
+    "membersEmpty": "No members added yet.",
+    "memberAdd": "Add",
+    "memberRemove": "Remove",
+    "userSearchLabel": "Search users",
+    "userSearchPlaceholder": "At least 2 characters (name or email)…",
+    "queryHint": "Enter a query to search all profiles.",
+    "searching": "Searching…",
+    "allFilteredOut": "All results are you, the owner, or already members.",
+    "noMatches": "No users match this query. They must ",
+    "noMatchesBold": "sign in or register",
+    "noMatchesTail": " in the app once to appear in the profile directory. Check the email spelling."
+  },
+  "authDialog": {
+    "configHint": "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment.",
+    "or": "Or",
+    "continueGoogleAria": "Continue with Google",
+    "redirecting": "Redirecting…",
+    "continueGoogle": "Continue with Google",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signInDescription": "Enter your email and password to access your workspace.",
+    "signUpDescription": "Create an account with your email and a password.",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "signingIn": "Signing in…",
+    "signingUp": "Signing up…",
+    "noAccount": "No account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "passwordMismatch": "Passwords do not match.",
+    "checkEmail": "Check your email to confirm your account before signing in."
+  },
+  "kanban": {
+    "board": {
+      "pickFromSidebar": "Choose a board from the sidebar.",
+      "loadingColumns": "Loading columns…",
+      "columnsCount_one": "{{count}} column",
+      "columnsCount_other": "{{count}} columns",
+      "addColumn": "Add column",
+      "noColumns": "No columns yet.",
+      "addFirstColumn": "Add first column"
+    },
+    "column": {
+      "editAria": "Edit column {{title}}",
+      "deleteAria": "Delete column {{title}}",
+      "noTasks": "No tasks",
+      "createCard": "Create card",
+      "deleteTitle": "Delete column?",
+      "deleteDescription": "Column «{{title}}» and all cards in it will be permanently deleted."
+    },
+    "columnForm": {
+      "createTitle": "New column",
+      "editTitle": "Edit column",
+      "descCreate": "Set the column title and header color.",
+      "descEdit": "Change the title or color.",
+      "titlePlaceholder": "e.g. To do",
+      "deleteColumnButton": "Delete column",
+      "deleteConfirmTitle": "Delete column?",
+      "deleteConfirmDescription": "Column «{{title}}» and all cards in it will be permanently deleted.",
+      "colorAria": "Color {{hex}}"
+    },
+    "taskCard": {
+      "editAria": "Edit: {{title}}",
+      "deleteAria": "Delete task: {{title}}",
+      "assignee": "Assignee:",
+      "noAssignee": "Unassigned",
+      "dialogEditTitle": "Edit task",
+      "dialogEditHint": "Changes are saved to the database.",
+      "deleteCardTitle": "Delete card?",
+      "deleteCardDescription": "«{{title}}» will be permanently deleted from the database."
+    },
+    "taskForm": {
+      "createTitle": "New card",
+      "createHint": "The card will be saved on the board.",
+      "createSubmit": "Create card",
+      "taskTitle": "Task title",
+      "titlePlaceholder": "Short headline",
+      "description": "Description",
+      "descriptionPlaceholder": "Task details…",
+      "cardColor": "Card color",
+      "assignee": "Assignee",
+      "membersLoading": "Loading members…",
+      "assigneeNone": "Unassigned",
+      "assigneeLegacy": "{{name}} (not a board member)",
+      "noMembersHint": "Add members in board settings to assign tasks.",
+      "colorAria": "Color {{hex}}"
+    },
+    "aiBreakdown": {
+      "title": "AI task breakdown",
+      "hint": "Describe a large task; the service returns sub-tasks as cards in the selected column.",
+      "columnLabel": "Target column",
+      "taskLabel": "Task to break down",
+      "placeholder": "e.g. Implement authentication for the app",
+      "submit": "Split and add cards",
+      "submitting": "Splitting…",
+      "noColumns": "Add at least one column to import sub-tasks.",
+      "emptyItems": "The API returned no usable items (each needs a title).",
+      "success_one": "Added {{count}} card:",
+      "success_other": "Added {{count}} cards:"
+    }
+  }
+}

@@ -10,9 +10,21 @@ export type BoardMember = {
   name: string
 }
 
-export type TaskSummary = {
+export type BoardColumnSummary = {
   id: string
   boardId: string
   title: string
-  columnId?: string
+  color: string
+  position: number
+}
+
+export type TaskSummary = {
+  id: string
+  boardId: string
+  columnId: string
+  title: string
+  description: string
+  color: string
+  assigneeLabel: string
+  position: number
 }

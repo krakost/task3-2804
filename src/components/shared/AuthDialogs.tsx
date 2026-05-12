@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -18,9 +19,6 @@ type AuthDialogsProps = {
   mode: AuthDialogMode
   onModeChange: (mode: AuthDialogMode) => void
 }
-
-const CONFIG_HINT =
-  'Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment.'
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -51,13 +49,16 @@ function GoogleIcon({ className }: { className?: string }) {
 }
 
 function OrDivider() {
+  const { t } = useTranslation()
   return (
     <div className="relative py-1">
       <div className="absolute inset-0 flex items-center">
         <span className="w-full border-t border-border" />
       </div>
       <div className="relative flex justify-center text-xs uppercase tracking-wide">
-        <span className="bg-popover px-2 text-muted-foreground">Or</span>
+        <span className="bg-popover px-2 text-muted-foreground">
+          {t('authDialog.or')}
+        </span>
       </div>
     </div>
   )
@@ -72,23 +73,25 @@ function ContinueWithGoogleButton({
   loading?: boolean
   onContinue: () => void | Promise<void>
 }) {
+  const { t } = useTranslation()
   return (
     <Button
       type="button"
       variant="outline"
       className="w-full gap-2"
-      aria-label="Continue with Google"
+      aria-label={t('authDialog.continueGoogleAria')}
       aria-busy={loading}
       disabled={disabled}
       onClick={() => void onContinue()}
     >
       <GoogleIcon className="size-4 shrink-0" />
-      {loading ? 'Redirecting…' : 'Continue with Google'}
+      {loading ? t('authDialog.redirecting') : t('authDialog.continueGoogle')}
     </Button>
   )
 }
 
 export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
+  const { t } = useTranslation()
   const open = mode !== 'closed'
   const activeMode = mode === 'closed' ? 'signin' : mode
 
@@ -129,7 +132,7 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
     setError(null)
     setInfo(null)
     if (!isSupabaseConfigured() || !supabase) {
-      setError(CONFIG_HINT)
+      setError(t('authDialog.configHint'))
       return
     }
     setOauthPending(true)
@@ -157,7 +160,7 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
     setError(null)
     setInfo(null)
     if (!isSupabaseConfigured() || !supabase) {
-      setError(CONFIG_HINT)
+      setError(t('authDialog.configHint'))
       return
     }
     setPending(true)
@@ -182,11 +185,11 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
     setError(null)
     setInfo(null)
     if (password !== confirmPassword) {
-      setError('Passwords do not match.')
+      setError(t('authDialog.passwordMismatch'))
       return
     }
     if (!isSupabaseConfigured() || !supabase) {
-      setError(CONFIG_HINT)
+      setError(t('authDialog.configHint'))
       return
     }
     setPending(true)
@@ -208,7 +211,7 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
       } else {
         setPassword('')
         setConfirmPassword('')
-        setInfo('Check your email to confirm your account before signing in.')
+        setInfo(t('authDialog.checkEmail'))
       }
     } finally {
       setPending(false)
@@ -225,19 +228,21 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
       <DialogContent className="gap-6 sm:max-w-[22rem]" showCloseButton>
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold tracking-tight">
-            {activeMode === 'signin' ? 'Sign in' : 'Sign up'}
+            {activeMode === 'signin'
+              ? t('authDialog.signIn')
+              : t('authDialog.signUp')}
           </DialogTitle>
           <DialogDescription className="text-sm">
             {activeMode === 'signin'
-              ? 'Enter your email and password to access your workspace.'
-              : 'Create an account with your email and a password.'}
+              ? t('authDialog.signInDescription')
+              : t('authDialog.signUpDescription')}
           </DialogDescription>
         </DialogHeader>
 
         {activeMode === 'signin' ? (
           <form className="space-y-4" onSubmit={handleSignIn}>
             <div className="space-y-2">
-              <Label htmlFor="auth-email">Email</Label>
+              <Label htmlFor="auth-email">{t('authDialog.email')}</Label>
               <Input
                 id="auth-email"
                 type="email"
@@ -249,7 +254,7 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="auth-password">Password</Label>
+              <Label htmlFor="auth-password">{t('authDialog.password')}</Label>
               <Input
                 id="auth-password"
                 type="password"
@@ -267,7 +272,7 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
               </p>
             ) : null}
             <Button type="submit" className="w-full" disabled={busy}>
-              {pending ? 'Signing in…' : 'Sign in'}
+              {pending ? t('authDialog.signingIn') : t('authDialog.signIn')}
             </Button>
             <OrDivider />
             <ContinueWithGoogleButton
@@ -276,21 +281,21 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
               onContinue={handleGoogleSignIn}
             />
             <p className="text-center text-sm text-muted-foreground">
-              No account?{' '}
+              {t('authDialog.noAccount')}{' '}
               <button
                 type="button"
                 className="font-medium text-foreground underline-offset-4 hover:underline"
                 disabled={busy}
                 onClick={() => switchAuthMode('signup')}
               >
-                Sign up
+                {t('authDialog.signUp')}
               </button>
             </p>
           </form>
         ) : (
           <form className="space-y-4" onSubmit={handleSignUp}>
             <div className="space-y-2">
-              <Label htmlFor="signup-email">Email</Label>
+              <Label htmlFor="signup-email">{t('authDialog.email')}</Label>
               <Input
                 id="signup-email"
                 type="email"
@@ -303,7 +308,9 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="signup-password">Password</Label>
+              <Label htmlFor="signup-password">
+                {t('authDialog.password')}
+              </Label>
               <Input
                 id="signup-password"
                 type="password"
@@ -317,7 +324,9 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="signup-confirm">Confirm password</Label>
+              <Label htmlFor="signup-confirm">
+                {t('authDialog.confirmPassword')}
+              </Label>
               <Input
                 id="signup-confirm"
                 type="password"
@@ -341,7 +350,7 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
               </p>
             ) : null}
             <Button type="submit" className="w-full" disabled={busy}>
-              {pending ? 'Signing up…' : 'Sign up'}
+              {pending ? t('authDialog.signingUp') : t('authDialog.signUp')}
             </Button>
             <OrDivider />
             <ContinueWithGoogleButton
@@ -350,14 +359,14 @@ export function AuthDialogs({ mode, onModeChange }: AuthDialogsProps) {
               onContinue={handleGoogleSignIn}
             />
             <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
+              {t('authDialog.alreadyHaveAccount')}{' '}
               <button
                 type="button"
                 className="font-medium text-foreground underline-offset-4 hover:underline"
                 disabled={busy}
                 onClick={() => switchAuthMode('signin')}
               >
-                Sign in
+                {t('authDialog.signIn')}
               </button>
             </p>
           </form>

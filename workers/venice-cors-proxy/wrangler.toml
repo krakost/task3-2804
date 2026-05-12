@@ -1,0 +1,7 @@
+name = "venice-breakdown-cors-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# Полный URL эндпоинта Venice (POST JSON {"task":"..."}).
+[vars]
+VENICE_UPSTREAM_URL = "https://taskboard.krakost1980.workers.dev/api/venice/breakdown"

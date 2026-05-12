@@ -18,6 +18,19 @@ export function useBoardMembers(boardId: string | null, dialogOpen: boolean) {
   })
 }
 
+/** Участники доски (кэш тот же, что у настроек доски). */
+export function useBoardMembersQuery(boardId: string | undefined) {
+  const user = useAuthStore((s) => s.user)
+  return useQuery({
+    queryKey: ['board-members', boardId, user?.id],
+    queryFn: () => fetchBoardMembers(boardId!),
+    enabled: Boolean(supabase && user && boardId),
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  })
+}
+
 export function useSearchProfiles(searchQuery: string) {
   const user = useAuthStore((s) => s.user)
   const q = searchQuery.trim()

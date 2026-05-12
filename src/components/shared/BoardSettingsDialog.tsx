@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -33,13 +34,14 @@ export function BoardSettingsDialog({
   boardTitle,
   ownerUserId,
 }: BoardSettingsDialogProps) {
+  const { t } = useTranslation()
   const currentUser = useAuthStore((s) => s.user)
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
 
   useEffect(() => {
-    const t = window.setTimeout(() => setDebouncedQuery(query.trim()), 400)
-    return () => window.clearTimeout(t)
+    const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 400)
+    return () => window.clearTimeout(timer)
   }, [query])
 
   const membersQuery = useBoardMembers(boardId, open)
@@ -108,31 +110,30 @@ export function BoardSettingsDialog({
       >
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold tracking-tight">
-            Настройки board
+            {t('boardSettings.dialogTitle')}
           </DialogTitle>
           <DialogDescription className="text-sm">
             {boardTitle ? (
-              <>
-                Доска «{boardTitle}». Участники и приглашения по email или имени в
-                профиле.
-              </>
+              <>{t('boardSettings.descriptionNamed', { title: boardTitle })}</>
             ) : (
-              <>
-                Участники и приглашения по email или имени в профиле.
-              </>
+              <>{t('boardSettings.descriptionGeneric')}</>
             )}
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
           <section className="shrink-0 space-y-2">
-            <h3 className="text-sm font-medium text-foreground">Участники</h3>
+            <h3 className="text-sm font-medium text-foreground">
+              {t('boardSettings.membersHeading')}
+            </h3>
             <div className="max-h-40 overflow-auto rounded-md border border-border">
               {membersBusy ? (
-                <p className="p-3 text-sm text-muted-foreground">Загрузка…</p>
+                <p className="p-3 text-sm text-muted-foreground">
+                  {t('common.loading')}
+                </p>
               ) : !membersQuery.data?.length ? (
                 <p className="p-3 text-sm text-muted-foreground">
-                  Пока никого не добавили.
+                  {t('boardSettings.membersEmpty')}
                 </p>
               ) : (
                 <ul className="divide-y divide-border">
@@ -152,10 +153,14 @@ export function BoardSettingsDialog({
                         size="sm"
                         variant="outline"
                         className="shrink-0 text-destructive hover:bg-destructive/10"
-                        disabled={removingId === m.userId || removeMember.isPending}
+                        disabled={
+                          removingId === m.userId || removeMember.isPending
+                        }
                         onClick={() => void handleRemove(m.userId)}
                       >
-                        {removingId === m.userId ? '…' : 'Удалить'}
+                        {removingId === m.userId
+                          ? '…'
+                          : t('boardSettings.memberRemove')}
                       </Button>
                     </li>
                   ))}
@@ -171,13 +176,13 @@ export function BoardSettingsDialog({
 
           <section className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
             <Label htmlFor="board-settings-user-search">
-              Поиск пользователей
+              {t('boardSettings.userSearchLabel')}
             </Label>
             <Input
               id="board-settings-user-search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Минимум 2 символа (имя или email)…"
+              placeholder={t('boardSettings.userSearchPlaceholder')}
               autoComplete="off"
             />
             {addMember.error ? (
@@ -188,32 +193,35 @@ export function BoardSettingsDialog({
             <div className="min-h-0 flex-1 overflow-auto rounded-md border border-border">
               {query.trim().length < 2 ? (
                 <p className="p-3 text-sm text-muted-foreground">
-                  Введите запрос для поиска по всем профилям.
+                  {t('boardSettings.queryHint')}
                 </p>
               ) : searchQuery.isError ? (
                 <p className="p-3 text-sm text-destructive" role="alert">
                   {searchQuery.error instanceof Error
                     ? searchQuery.error.message
-                    : 'Ошибка поиска'}
+                    : t('common.searchError')}
                 </p>
               ) : debouncedQuery.length < 2 ? (
-                <p className="p-3 text-sm text-muted-foreground">Поиск…</p>
+                <p className="p-3 text-sm text-muted-foreground">
+                  {t('boardSettings.searching')}
+                </p>
               ) : searchQuery.isFetching ? (
-                <p className="p-3 text-sm text-muted-foreground">Поиск…</p>
+                <p className="p-3 text-sm text-muted-foreground">
+                  {t('boardSettings.searching')}
+                </p>
               ) : searchHits.length === 0 ? (
                 rawSearchHits.length > 0 ? (
                   <p className="p-3 text-sm text-muted-foreground">
-                    Все найденные пользователи — вы, владелец или уже в списке
-                    участников.
+                    {t('boardSettings.allFilteredOut')}
                   </p>
                 ) : (
                   <p className="p-3 text-sm text-muted-foreground">
-                    Нет пользователей по этому запросу. Человек должен{' '}
+                    {t('boardSettings.noMatches')}
                     <strong className="font-medium text-foreground">
-                      один раз войти / зарегистрироваться
+                      {' '}
+                      {t('boardSettings.noMatchesBold')}
                     </strong>{' '}
-                    в приложении — тогда появится в каталоге профилей. Проверьте
-                    написание email.
+                    {t('boardSettings.noMatchesTail')}
                   </p>
                 )
               ) : (
@@ -240,7 +248,9 @@ export function BoardSettingsDialog({
                         }
                         onClick={() => void handleAdd(u.id)}
                       >
-                        {addingId === u.id ? '…' : 'Добавить'}
+                        {addingId === u.id
+                          ? '…'
+                          : t('boardSettings.memberAdd')}
                       </Button>
                     </li>
                   ))}

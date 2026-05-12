@@ -1,4 +1,5 @@
 import { type FormEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Settings, Trash2 } from 'lucide-react'
 
@@ -19,6 +20,7 @@ import { useBoards, useCreateBoard, useDeleteBoard } from '@/hooks/useBoards'
 import { cn } from '@/lib/utils'
 
 export function BoardsRightSidebar() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const user = useAuthStore((s) => s.user)
@@ -79,10 +81,12 @@ export function BoardsRightSidebar() {
         <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-foreground">
-              Boards
+              {t('boardsSidebar.title')}
             </p>
             <p className="text-xs text-muted-foreground">
-              {isFetching ? 'Loading…' : `${boards.length} total`}
+              {isFetching
+                ? t('common.loading')
+                : t('boardsSidebar.total', { count: boards.length })}
             </p>
           </div>
           <Button
@@ -91,7 +95,7 @@ export function BoardsRightSidebar() {
             variant="outline"
             onClick={() => setDialogOpen(true)}
           >
-            Создать Board
+            {t('boardsSidebar.createBoard')}
           </Button>
         </div>
 
@@ -100,15 +104,14 @@ export function BoardsRightSidebar() {
             <div className="space-y-1">
               {Array.from({ length: 6 }).map((_, idx) => (
                 <div
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={idx}
+                  key={`board-list-skel-${idx}`}
                   className="h-8 w-full animate-pulse rounded-md bg-muted"
                 />
               ))}
             </div>
           ) : boards.length === 0 ? (
             <div className="p-2 text-sm text-muted-foreground">
-              No boards yet.
+              {t('boardsSidebar.noBoardsYet')}
             </div>
           ) : (
             <div className="space-y-1">
@@ -135,7 +138,9 @@ export function BoardsRightSidebar() {
                         variant="ghost"
                         size="icon-sm"
                         className="shrink-0 text-muted-foreground hover:text-foreground"
-                        aria-label={`Настройки: ${b.title}`}
+                        aria-label={t('boardsSidebar.ariaSettings', {
+                          title: b.title,
+                        })}
                         onClick={(e) => {
                           e.preventDefault()
                           setBoardSettingsBoardId(b.id)
@@ -151,7 +156,9 @@ export function BoardsRightSidebar() {
                         variant="ghost"
                         size="icon-sm"
                         className="shrink-0 text-muted-foreground hover:text-destructive"
-                        aria-label={`Удалить доску: ${b.title}`}
+                        aria-label={t('boardsSidebar.ariaDelete', {
+                          title: b.title,
+                        })}
                         disabled={deleteBoard.isPending}
                         onClick={(e) => {
                           e.preventDefault()
@@ -173,21 +180,21 @@ export function BoardsRightSidebar() {
         <DialogContent className="gap-4 sm:max-w-[22rem]" showCloseButton>
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold tracking-tight">
-              Создать Board
+              {t('boardsSidebar.dialogCreateTitle')}
             </DialogTitle>
             <DialogDescription className="text-sm">
-              Введите название новой доски.
+              {t('boardsSidebar.dialogCreateDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="create-board-title">Название</Label>
+              <Label htmlFor="create-board-title">{t('common.title')}</Label>
               <Input
                 id="create-board-title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Например, Product"
+                placeholder={t('boardsSidebar.namePlaceholder')}
                 autoComplete="off"
                 disabled={busy}
                 required
@@ -207,10 +214,10 @@ export function BoardsRightSidebar() {
                 disabled={busy}
                 onClick={() => handleOpenChange(false)}
               >
-                Отмена
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={busy}>
-                {busy ? 'Создание…' : 'Создать'}
+                {busy ? t('common.creating') : t('common.create')}
               </Button>
             </DialogFooter>
           </form>
@@ -226,11 +233,13 @@ export function BoardsRightSidebar() {
         <DialogContent className="gap-4 sm:max-w-[22rem]" showCloseButton>
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold tracking-tight">
-              Удалить доску?
+              {t('boardsSidebar.deleteConfirmTitle')}
             </DialogTitle>
             <DialogDescription className="text-sm">
               {deleteTarget
-                ? `«${deleteTarget.title}» будет удалена без возможности восстановления. Задачи и участники будут потеряны.`
+                ? t('boardsSidebar.deleteConfirmDescription', {
+                    title: deleteTarget.title,
+                  })
                 : null}
             </DialogDescription>
           </DialogHeader>
@@ -246,7 +255,7 @@ export function BoardsRightSidebar() {
               disabled={deleteBoard.isPending}
               onClick={() => setDeleteTarget(null)}
             >
-              Отмена
+              {t('common.cancel')}
             </Button>
             <Button
               type="button"
@@ -265,7 +274,7 @@ export function BoardsRightSidebar() {
                 })
               }}
             >
-              {deleteBoard.isPending ? 'Удаление…' : 'Удалить'}
+              {deleteBoard.isPending ? t('common.deleting') : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

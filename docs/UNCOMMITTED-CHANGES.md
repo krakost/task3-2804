@@ -129,3 +129,70 @@
 | Изменены | `src/pages/board/BoardPage.tsx`, `src/pages/boards/BoardsPage.tsx`, `src/types/index.ts` |
 | Новые | `src/app/AuthBootstrap.tsx`, `src/components/shared/BoardSettingsDialog.tsx`, `src/components/shared/BoardsRightSidebar.tsx` |
 | Новые | `src/features/auth/store.ts`, `src/hooks/useBoardMembers.ts`, `src/lib/supabase-client.ts` |
+
+---
+
+## Локализация интерфейса (RU / EN)
+
+Подробное описание: **`docs/I18N.md`**.
+
+### Зависимости
+
+- **`package.json` / `package-lock.json`**: **`i18next`**, **`react-i18next`**.
+
+### Конфигурация и переводы
+
+- **`src/lib/i18n.ts`** (новый): инициализация i18next, ресурсы `en`/`ru`, чтение/запись **`localStorage`** (`preferred-locale`), определение языка из **`navigator.language`**, синхронизация **`document.documentElement.lang`**, экспорт **`changeAppLocale`**.
+- **`src/locales/en.json`**, **`src/locales/ru.json`** (новые): все строки UI с согласованной иерархией ключей.
+- **`tsconfig.app.json`**: **`resolveJsonModule`: true** (импорт JSON).
+
+### Интеграция в приложение
+
+- **`src/main.tsx`**: **`import '@/lib/i18n'`** до `createRoot`.
+- **`src/app/providers.tsx`**: обёртка **`I18nextProvider`** вокруг **`QueryClientProvider`** (внешний уровень — i18n).
+
+### UI
+
+- **`src/components/shared/AppLayout.tsx`**: переключатель языка (**`<select>`** `en` / `ru`), навигация и кнопки auth через **`t(...)`**.
+
+### Компоненты и страницы с `useTranslation`
+
+- **`src/components/shared/AuthDialogs.tsx`**
+- **`src/pages/boards/BoardsPage.tsx`**, **`src/pages/board/BoardPage.tsx`**, **`src/pages/settings/SettingsPage.tsx`**
+- **`src/components/shared/BoardsRightSidebar.tsx`**, **`src/components/shared/BoardSettingsDialog.tsx`**
+- **`src/components/kanban/Board.tsx`** (панель **`BoardAiBreakdownPanel`**), **`Column.tsx`**, **`ColumnFormDialog.tsx`**, **`TaskCard.tsx`**, **`TaskCardFormDialog.tsx`**
+
+### Документация в репозитории
+
+- **`docs/I18N.md`** — полное руководство по локализации (плюралы, новые ключи, исключения).
+- **`docs/README.md`** — индекс всей пользовательской документации в `docs/`.
+- **`README.md`** — секции **Documentation**, **Internationalization**, Venice; ссылки на **`docs/`**.
+
+### Сводка дополнительных путей (i18n)
+
+| Статус | Путь |
+|--------|------|
+| Новые | `docs/I18N.md`, **`docs/README.md`** |
+| Изменены | `README.md`, `tsconfig.app.json`, `src/main.tsx`, `src/app/providers.tsx`, `package.json`, `package-lock.json` |
+| Изменены (строки → `t`) | См. список компонентов выше |
+
+---
+
+## Venice AI breakdown и CORS
+
+Подробно: **`docs/VENICE-BREAKDOWN.md`**, указатель документов: **`docs/README.md`**.
+
+### Поведение
+
+- Панель на доске: **`POST {"task":"..."}`**, ответ **`{ items: [...] }`**, последовательные вставки через **`createBoardTask`** в выбранную колонку (хук **`useVeniceBreakdownImport`**).
+- Без **`VITE_VENICE_BREAKDOWN_URL`**: при **`npm run dev`** клиент дергает **`/api/venice/breakdown`** (прокси в **`vite.config.ts`**); при production-сборке — URL по умолчанию из кода или значение из env.
+- Каталог **`workers/venice-cors-proxy`**: Worker с **`Access-Control-Allow-Origin: *`**, деплой через **`npx wrangler deploy`** (`wrangler.toml`, **`VENICE_UPSTREAM_URL`**).
+
+### Сводка путей (Venice + прокси + документы)
+
+| Статус | Путь |
+|--------|------|
+| Новые / расширены | `docs/VENICE-BREAKDOWN.md`, `docs/README.md`, **`workers/venice-cors-proxy/`** |
+| Изменены | **`vite.config.ts`**, **`src/features/ai/api.ts`**, **`src/vite-env.d.ts`**, **`src/components/kanban/Board.tsx`**, **`src/locales/en.json`**, **`ru.json`**, **`.env.example`**, **`README.md`**, **`docs/I18N.md`** |
+| Новые (UI / логика) | **`src/components/kanban/BoardAiBreakdownPanel.tsx`**, **`src/hooks/useVeniceBreakdownImport.ts`** |
+

@@ -1,0 +1,180 @@
+{
+  "layout": {
+    "brand": "Kanban",
+    "nav": {
+      "boards": "Доски",
+      "settings": "Настройки"
+    },
+    "auth": {
+      "signOut": "Выйти",
+      "signIn": "Войти",
+      "signUp": "Регистрация"
+    },
+    "locale": {
+      "label": "Язык",
+      "en": "English",
+      "ru": "Русский"
+    }
+  },
+  "common": {
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "deleting": "Удаление…",
+    "loading": "Загрузка…",
+    "save": "Сохранить",
+    "saving": "Сохранение…",
+    "create": "Создать",
+    "creating": "Создание…",
+    "retryLoad": "Повторить загрузку",
+    "searchError": "Ошибка поиска",
+    "title": "Название",
+    "color": "Цвет",
+    "customColor": "Свой цвет"
+  },
+  "settingsPage": {
+    "title": "Настройки",
+    "description": "Здесь позже будут настройки приложения."
+  },
+  "boardsPage": {
+    "title": "Доски",
+    "loading": "Загрузка…",
+    "signInToSee": "Войдите, чтобы видеть доски.",
+    "empty": "Пока нет досок — создайте первую в сайдбаре.",
+    "count_one": "{{count}} доска.",
+    "count_few": "{{count}} доски.",
+    "count_many": "{{count}} досок.",
+    "count_other": "{{count}} досок."
+  },
+  "boardPage": {
+    "boardFallback": "Доска",
+    "idPrefix": "ID:",
+    "loadingTasks": " · Загрузка задач…",
+    "tasksCount_one": " · {{count}} задача",
+    "tasksCount_few": " · {{count}} задачи",
+    "tasksCount_many": " · {{count}} задач",
+    "tasksCount_other": " · {{count}} задач"
+  },
+  "boardsSidebar": {
+    "title": "Доски",
+    "total": "Всего: {{count}}",
+    "createBoard": "Создать доску",
+    "noBoardsYet": "Досок пока нет.",
+    "dialogCreateTitle": "Создать доску",
+    "dialogCreateDescription": "Введите название новой доски.",
+    "namePlaceholder": "Например, Product",
+    "deleteConfirmTitle": "Удалить доску?",
+    "deleteConfirmDescription": "«{{title}}» будет удалена без возможности восстановления. Задачи и участники будут потеряны.",
+    "ariaSettings": "Настройки: {{title}}",
+    "ariaDelete": "Удалить доску: {{title}}"
+  },
+  "boardSettings": {
+    "dialogTitle": "Настройки доски",
+    "descriptionNamed": "Доска «{{title}}». Участники и приглашения по email или имени в профиле.",
+    "descriptionGeneric": "Участники и приглашения по email или имени в профиле.",
+    "membersHeading": "Участники",
+    "membersEmpty": "Пока никого не добавили.",
+    "memberAdd": "Добавить",
+    "memberRemove": "Удалить",
+    "userSearchLabel": "Поиск пользователей",
+    "userSearchPlaceholder": "Минимум 2 символа (имя или email)…",
+    "queryHint": "Введите запрос для поиска по всем профилям.",
+    "searching": "Поиск…",
+    "allFilteredOut": "Все найденные пользователи — вы, владелец или уже в списке участников.",
+    "noMatches": "Нет пользователей по этому запросу. Человек должен ",
+    "noMatchesBold": "один раз войти / зарегистрироваться",
+    "noMatchesTail": " в приложении — тогда появится в каталоге профилей. Проверьте написание email."
+  },
+  "authDialog": {
+    "configHint": "Supabase не настроен. Добавьте VITE_SUPABASE_URL и VITE_SUPABASE_ANON_KEY в окружение.",
+    "or": "Или",
+    "continueGoogleAria": "Продолжить с Google",
+    "redirecting": "Переадресация…",
+    "continueGoogle": "Продолжить с Google",
+    "signIn": "Вход",
+    "signUp": "Регистрация",
+    "signInDescription": "Введите email и пароль, чтобы войти в рабочее пространство.",
+    "signUpDescription": "Создайте аккаунт с email и паролем.",
+    "email": "Email",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "signingIn": "Вход…",
+    "signingUp": "Регистрация…",
+    "noAccount": "Нет аккаунта?",
+    "alreadyHaveAccount": "Уже есть аккаунт?",
+    "passwordMismatch": "Пароли не совпадают.",
+    "checkEmail": "Проверьте почту, чтобы подтвердить аккаунт перед входом."
+  },
+  "kanban": {
+    "board": {
+      "pickFromSidebar": "Откройте доску из списка в сайдбаре.",
+      "loadingColumns": "Загрузка колонок…",
+      "columnsCount_one": "{{count}} колонка",
+      "columnsCount_few": "{{count}} колонки",
+      "columnsCount_many": "{{count}} колонок",
+      "columnsCount_other": "{{count}} колонок",
+      "addColumn": "Добавить колонку",
+      "noColumns": "Пока нет колонок.",
+      "addFirstColumn": "Добавить первую колонку"
+    },
+    "column": {
+      "editAria": "Редактировать колонку {{title}}",
+      "deleteAria": "Удалить колонку {{title}}",
+      "noTasks": "Нет задач",
+      "createCard": "Создать карточку",
+      "deleteTitle": "Удалить колонку?",
+      "deleteDescription": "Колонка «{{title}}» и все карточки в ней будут удалены из базы данных без возможности восстановления."
+    },
+    "columnForm": {
+      "createTitle": "Новая колонка",
+      "editTitle": "Редактировать колонку",
+      "descCreate": "Задайте название и цвет заголовка колонки.",
+      "descEdit": "Измените название или цвет.",
+      "titlePlaceholder": "Например, To do",
+      "deleteColumnButton": "Удалить колонку",
+      "deleteConfirmTitle": "Удалить колонку?",
+      "deleteConfirmDescription": "Колонка «{{title}}» и все карточки в ней будут удалены без возможности восстановления.",
+      "colorAria": "Цвет {{hex}}"
+    },
+    "taskCard": {
+      "editAria": "Редактировать: {{title}}",
+      "deleteAria": "Удалить задачу: {{title}}",
+      "assignee": "Исполнитель:",
+      "noAssignee": "Без исполнителя",
+      "dialogEditTitle": "Редактировать задачу",
+      "dialogEditHint": "Изменения сохраняются в базе данных.",
+      "deleteCardTitle": "Удалить карточку?",
+      "deleteCardDescription": "«{{title}}» будет удалена из базы данных без возможности восстановления."
+    },
+    "taskForm": {
+      "createTitle": "Новая карточка",
+      "createHint": "Карточка будет сохранена на доске.",
+      "createSubmit": "Создать карточку",
+      "taskTitle": "Название задачи",
+      "titlePlaceholder": "Краткий заголовок",
+      "description": "Описание",
+      "descriptionPlaceholder": "Детали задачи…",
+      "cardColor": "Цвет карточки",
+      "assignee": "Исполнитель",
+      "membersLoading": "Загрузка списка участников…",
+      "assigneeNone": "Не назначено",
+      "assigneeLegacy": "{{name}} (не в списке участников)",
+      "noMembersHint": "Добавьте участников в настройках доски, чтобы назначать задачи.",
+      "colorAria": "Цвет {{hex}}"
+    },
+    "aiBreakdown": {
+      "title": "Разбор задачи (AI)",
+      "hint": "Опишите крупную задачу — сервис вернёт подзадачи и они будут добавлены как карточки в выбранную колонку.",
+      "columnLabel": "Колонка",
+      "taskLabel": "Задача для разбиения",
+      "placeholder": "Например: внедрить аутентификацию в приложении",
+      "submit": "Разбить и добавить карточки",
+      "submitting": "Разбиение…",
+      "noColumns": "Добавьте хотя бы одну колонку, чтобы импортировать подзадачи.",
+      "emptyItems": "API не вернуло ни одной подходящей карточки (нужно поле title у каждого элемента).",
+      "success_one": "Добавлена {{count}} карточка:",
+      "success_few": "Добавлено {{count}} карточки:",
+      "success_many": "Добавлено {{count}} карточек:",
+      "success_other": "Добавлено {{count}} карточек:"
+    }
+  }
+}

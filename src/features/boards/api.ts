@@ -146,36 +146,63 @@ type ProfileJoin = {
   full_name: string | null
 }
 
-type MemberJoinRow = {
-  user_id: string
-  profiles: ProfileJoin | ProfileJoin[] | null
-}
-
-function joinedProfile(
-  p: ProfileJoin | ProfileJoin[] | null,
-): ProfileJoin | null {
-  if (p == null) return null
-  return Array.isArray(p) ? (p[0] ?? null) : p
+function memberFromProfileRow(
+  userId: string,
+  p: ProfileJoin | null,
+): BoardMember {
+  const email = p?.email ?? ''
+  const name = (p?.full_name?.trim() || p?.email || userId).toString()
+  return { userId, email, name }
 }
 
 export async function fetchBoardMembers(boardId: string): Promise<BoardMember[]> {
   if (!supabase) throw new Error('Supabase is not configured.')
 
-  const { data, error } = await supabase
+  const board = await fetchBoard(boardId)
+
+  const { data: memberRows, error: membersError } = await supabase
     .from('board_members')
-    .select('user_id, profiles(id, email, full_name)')
+    .select('user_id')
     .eq('board_id', boardId)
 
-  if (error) throw new Error(error.message)
+  if (membersError) throw new Error(membersError.message)
 
-  return (data ?? []).map((raw) => {
-    const row = raw as MemberJoinRow
-    const p = joinedProfile(row.profiles)
-    const email = p?.email ?? ''
-    const name =
-      (p?.full_name?.trim() || p?.email || row.user_id).toString()
-    return { userId: row.user_id, email, name }
-  })
+  const memberIds = (memberRows ?? []).map(
+    (r: { user_id: string }) => r.user_id,
+  )
+
+  let orderedUserIds: string[] = [...memberIds]
+  if (board != null && !orderedUserIds.includes(board.user_id)) {
+    orderedUserIds = [board.user_id, ...orderedUserIds]
+  }
+
+  const seen = new Set<string>()
+  const uniqueOrdered: string[] = []
+  for (const id of orderedUserIds) {
+    if (seen.has(id)) continue
+    seen.add(id)
+    uniqueOrdered.push(id)
+  }
+
+  if (uniqueOrdered.length === 0) {
+    return []
+  }
+
+  const { data: profileRows, error: profilesError } = await supabase
+    .from('profiles')
+    .select('id, email, full_name')
+    .in('id', uniqueOrdered)
+
+  if (profilesError) throw new Error(profilesError.message)
+
+  const profileMap = new Map<string, ProfileJoin>()
+  for (const row of (profileRows ?? []) as ProfileJoin[]) {
+    profileMap.set(row.id, row)
+  }
+
+  return uniqueOrdered.map((userId) =>
+    memberFromProfileRow(userId, profileMap.get(userId) ?? null),
+  )
 }
 
 export async function addBoardMember(

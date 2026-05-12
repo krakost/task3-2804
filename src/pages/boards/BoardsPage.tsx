@@ -1,27 +1,32 @@
+import { useTranslation } from 'react-i18next'
+
 import { useAuthStore } from '@/features/auth/store'
 import { useBoards } from '@/hooks/useBoards'
 
 export default function BoardsPage() {
+  const { t } = useTranslation()
   const { data: boards = [], isFetching } = useBoards()
   const user = useAuthStore((s) => s.user)
   const hydrated = useAuthStore((s) => s.hydrated)
 
   let status: string
   if (!hydrated) {
-    status = 'Loading…'
+    status = t('boardsPage.loading')
   } else if (!user) {
-    status = 'Войдите, чтобы видеть доски.'
+    status = t('boardsPage.signInToSee')
   } else if (isFetching) {
-    status = 'Loading…'
+    status = t('boardsPage.loading')
   } else if (boards.length === 0) {
-    status = 'Пока нет досок — создайте первую в сайдбаре.'
+    status = t('boardsPage.empty')
   } else {
-    status = `${boards.length} board(s).`
+    status = t('boardsPage.count', { count: boards.length })
   }
 
   return (
     <div className="space-y-2">
-      <h1 className="text-2xl font-semibold tracking-tight">Boards</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">
+        {t('boardsPage.title')}
+      </h1>
       <p className="text-muted-foreground">{status}</p>
     </div>
   )

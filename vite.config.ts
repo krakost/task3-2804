@@ -13,4 +13,14 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      // Same-origin `/api/venice/*` → upstream (no browser CORS in dev).
+      '/api/venice': {
+        target: 'https://taskboard.krakost1980.workers.dev',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
 })
