@@ -147,7 +147,7 @@ export function TaskCardFormDialog({
   const assigneeOptions = useMemo(() => {
     const legacy = mode === 'edit' ? initial?.assigneeLabel : undefined
     return buildAssigneeOptions(members, t, legacy)
-  }, [members, mode, initial?.assigneeLabel, t])
+  }, [members, mode, initial, t])
 
   useEffect(() => {
     if (!open) return
@@ -164,7 +164,7 @@ export function TaskCardFormDialog({
       setDescription('')
       setColor(DEFAULT_COLOR)
     }
-  }, [open, mode, resetKey, initial?.title, initial?.description, initial?.color])
+  }, [open, mode, resetKey, initial])
 
   useEffect(() => {
     if (!open) return
@@ -173,7 +173,7 @@ export function TaskCardFormDialog({
     } else {
       setAssigneeId('')
     }
-  }, [open, mode, resetKey, initial?.assigneeLabel, members])
+  }, [open, mode, resetKey, initial, members])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()

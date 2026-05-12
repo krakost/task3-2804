@@ -64,7 +64,10 @@ export function BoardSettingsDialog({
     [membersQuery.data],
   )
 
-  const rawSearchHits = searchQuery.data ?? []
+  const rawSearchHits = useMemo(
+    () => searchQuery.data ?? [],
+    [searchQuery.data],
+  )
 
   const searchHits = useMemo(() => {
     const hits = rawSearchHits

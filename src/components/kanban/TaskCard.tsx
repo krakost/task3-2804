@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { DraggableAttributes } from '@dnd-kit/core'
 import type { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities'
 import { useTranslation } from 'react-i18next'
@@ -69,6 +69,16 @@ export function TaskCard({
     }
   }
 
+  const editTaskInitial = useMemo(
+    () => ({
+      title: task.title,
+      description: task.description,
+      color: task.color,
+      assigneeLabel: task.assigneeLabel,
+    }),
+    [task.title, task.description, task.color, task.assigneeLabel],
+  )
+
   return (
     <>
       <div
@@ -138,12 +148,7 @@ export function TaskCard({
         onOpenChange={setEditOpen}
         mode="edit"
         resetKey={task.id}
-        initial={{
-          title: task.title,
-          description: task.description,
-          color: task.color,
-          assigneeLabel: task.assigneeLabel,
-        }}
+        initial={editTaskInitial}
         members={boardMembers}
         membersLoading={boardMembersLoading}
         membersLoadError={boardMembersError}

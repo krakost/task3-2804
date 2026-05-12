@@ -75,10 +75,8 @@ export function ColumnFormDialog({
       setTitle('')
       setColor(DEFAULT_COLUMN_COLOR)
     }
-    // Зависит только от открытия диалога и данных колонки с бэкенда (примитивы).
-    // Объекты мутаций из useMutation нельзя класть в deps — иначе эффект срабатывает
-    // на каждом рендере и сбрасывает название при вводе.
-  }, [open, mode, column?.id, column?.title, column?.color])
+    // column из стейта родителя стабилен на время редактирования; reset из TanStack Query стабилен.
+  }, [open, mode, column, createCol.reset, updateCol.reset, deleteCol.reset])
 
   function handleClose() {
     onOpenChange(false)
